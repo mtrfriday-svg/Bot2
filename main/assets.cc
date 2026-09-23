@@ -259,10 +259,9 @@ bool Assets::LvglStrategy::InitializePartition(Assets* assets) {
     if (calculated_checksum != stored_chksum) {
         ESP_LOGE(TAG, "The calculated checksum (0x%lx) does not match the stored checksum (0x%lx)",
                  calculated_checksum, stored_chksum);
-        // --- TEMPORARY DIAGNOSTIC: force the partition to load anyway, to observe
-        // real device behavior despite the mismatch. REVERT before normal use.
-        ESP_LOGW(TAG, "DIAG: FORCING partition to load despite checksum mismatch (diagnostic mode)");
-        // --- END TEMPORARY DIAGNOSTIC
+        UnApplyPartition(assets);
+        assets->partition_valid_ = false;
+        return false;
     }
 
     checksum_valid_ = true;
