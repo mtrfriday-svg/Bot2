@@ -389,14 +389,14 @@ void Application::CheckAssetsVersion() {
     auto display = board.GetDisplay();
     auto& assets = Assets::GetInstance();
 
-    Settings settings("assets", true);
-    // Check if there is a new assets need to be downloaded
-    std::string download_url = settings.GetString("download_url");
-
-    if (download_url.empty() && !assets.partition_valid()) {
+    if (!assets.partition_valid()) {
         ESP_LOGW(TAG, "Assets partition is disabled for board %s", BOARD_NAME);
         return;
     }
+
+    Settings settings("assets", true);
+    // Check if there is a new assets need to be downloaded
+    std::string download_url = settings.GetString("download_url");
 
     if (!download_url.empty()) {
         settings.EraseKey("download_url");
