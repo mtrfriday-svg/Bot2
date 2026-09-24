@@ -161,10 +161,14 @@ void WifiBoard::SetNetworkEventCallback(NetworkEventCallback callback) {
 
 void WifiBoard::OnWifiConnectTimeout(void* arg) {
     auto* board = static_cast<WifiBoard*>(arg);
-    ESP_LOGW(TAG, "WiFi connection timeout, entering config mode");
+    ESP_LOGW(TAG, "WiFi connection timeout, retrying in background (not opening config AP)");
 
     WifiManager::GetInstance().StopStation();
-    board->StartWifiConfigMode();
+    // Keep silently retrying the saved network indefinitely instead of
+    // dropping into the disruptive config-mode AP. A genuinely missing
+    // SSID still goes to config mode immediately via TryWifiConnect(),
+    // and the boot button still allows forcing config mode manually.
+    board->TryWifiConnect();
 }
 
 void WifiBoard::StartWifiConfigMode() {
